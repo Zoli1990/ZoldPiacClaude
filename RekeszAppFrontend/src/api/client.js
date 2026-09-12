@@ -19,7 +19,7 @@ client.interceptors.response.use(
       localStorage.removeItem('felhasznalonev')
       localStorage.removeItem('role')
       localStorage.removeItem('userId')
-      if (!['/login', '/register', '/verify-email'].includes(location.pathname)) location.href = '/login'
+      if (!['/login', '/register', '/verify-email', '/forgot-password', '/reset-password'].includes(location.pathname)) location.href = '/login'
     }
     return Promise.reject(err)
   }
