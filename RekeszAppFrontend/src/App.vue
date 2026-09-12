@@ -22,9 +22,7 @@ onMounted(() => {
 })
 
 watch(darkMode, (dark) => {
-  if (document.documentElement.dataset.theme !== (dark ? 'dark' : 'light')) {
-    document.documentElement.dataset.theme = dark ? 'dark' : 'light'
-  }
+  document.documentElement.dataset.theme = dark ? 'dark' : 'light'
 })
 
 function temaValtas() {
@@ -63,6 +61,10 @@ function kijelentkezes() {
     </div>
   </header>
 
+  <button v-else class="public-theme-button" type="button" :title="darkMode ? 'Világos mód' : 'Sötét mód'" @click="temaValtas">
+    {{ darkMode ? '☀️' : '🌙' }}
+  </button>
+
   <main :class="{ 'no-header': !bejelentkezve }"><RouterView /></main>
   <CalculatorModal v-if="showCalculator" @close="showCalculator = false" />
 </template>
@@ -88,7 +90,7 @@ header {
   height: 40px;
   flex: 0 0 40px;
   border-radius: 12px;
-  background: #050805 url('https://raw.githubusercontent.com/Zoli1990/ZoldPiacClaude/main/NewStile.jpg') center 22% / 175% auto no-repeat;
+  background: #050805 url('/brand-zoldpiac.png') center / cover no-repeat;
   border: 1px solid rgba(163, 232, 53, .48);
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.06), 0 5px 14px rgba(0,0,0,.22);
 }
@@ -120,6 +122,19 @@ nav a.active { background:var(--brand-lime); color:var(--brand-deep); box-shadow
 .theme-label, .calc-label { font-size:12px; }
 .user-email { max-width:190px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; opacity:.86; }
 .logout-button { background:rgba(255,255,255,.08); color:#fff; border-color:rgba(255,255,255,.18); }
+.public-theme-button {
+  position:fixed;
+  top:16px;
+  right:16px;
+  z-index:20;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  border:1px solid var(--line-strong);
+  background:var(--paper);
+  color:var(--ink);
+  box-shadow:var(--shadow-soft);
+}
 main { max-width:1160px; margin:0 auto; padding:22px; }
 main.no-header { max-width:440px; padding-top:80px; }
 
@@ -139,5 +154,6 @@ main.no-header { max-width:440px; padding-top:80px; }
   .logout-button { width:auto !important; min-width:42px; padding:8px 11px !important; }
   main { padding:14px; }
   main.no-header { padding-top:44px; max-width:100%; }
+  .public-theme-button { top:10px; right:10px; }
 }
 </style>
