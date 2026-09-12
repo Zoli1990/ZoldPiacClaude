@@ -12,7 +12,7 @@ async function ujFelvitel(){if(!ujNev.value.trim()){hiba.value='A név kötelez�
 function szerkesztesInditasa(item){szerkesztId.value=item.id;szerkNev.value=item.nev;szerkRekeszTipusId.value=item.alapertelmezettRekeszTipusId||''}
 function megse(){szerkesztId.value=null}
 async function mentSzerkesztes(id){if(!szerkNev.value.trim()){hiba.value='A név kötelező.';return}hiba.value='';try{await client.put(`/zoldsegek/${id}`,{nev:szerkNev.value.trim(),alapertelmezettRekeszTipusId:szerkRekeszTipusId.value||null});szerkesztId.value=null;await frissit();emit('changed')}catch(e){hiba.value=e.response?.data?.message||'Mentés sikertelen.'}}
-async function torol(item){if(!confirm(`Biztosan törlöd: "${item.nev}"?`))return;hiba.value='';try{await client.delete(`/zoldsegek/${item.id}`);await frissit();emit('changed')}catch(e){hiba.value=e.response?.data?.message||'Törlés sikertelen.'}}
+async function torol(item){if(!confirm(`Biztosan törlöd: \"${item.nev}\"?`))return;hiba.value='';try{await client.delete(`/zoldsegek/${item.id}`);await frissit();emit('changed')}catch(e){hiba.value=e.response?.data?.message||'Törlés sikertelen.'}}
 async function kepValt(item,e){const file=e.target.files[0];e.target.value='';if(!file)return;if(!file.type.startsWith('image/')){hiba.value='Csak kép tölthető fel.';return}if(file.size>5_000_000){hiba.value='A kép mérete legfeljebb 5 MB lehet.';return}hiba.value='';kepFolyamatban.value=item.id;try{const fd=new FormData();fd.append('kep',file);await client.post(`/zoldsegek/${item.id}/kep`,fd,{headers:{'Content-Type':'multipart/form-data'}});await frissit();emit('changed')}catch(e2){hiba.value=e2.response?.data?.message||'Kép feltöltése sikertelen.'}finally{kepFolyamatban.value=null}}
 async function kepTorlese(item){hiba.value='';try{await client.delete(`/zoldsegek/${item.id}/kep`);await frissit();emit('changed')}catch(e2){hiba.value=e2.response?.data?.message||'Kép törlése sikertelen.'}}
 </script>
@@ -29,7 +29,7 @@ async function kepTorlese(item){hiba.value='';try{await client.delete(`/zoldsege
       <template v-else>
         <img v-if="item.kepUrl" :src="kepSrc(item.kepUrl)" class="thumb" alt=""/><div v-else class="thumb empty-thumb">🥬</div>
         <div class="item-info"><strong>{{item.nev}}</strong><span v-if="item.alapertelmezettRekeszTipusId">Alap: {{rekeszNev(item.alapertelmezettRekeszTipusId)}}</span></div>
-        <div class="actions"><label class="action-btn" title="Kép feltöltése/cseréje">{{kepFolyamatban===item.id?'⏳':'📷'}}<input type="file" accept="image/*" @change="kepValt(item,$event)"/></label><button v-if="item.kepUrl" class="action-btn" type="button" title="Kép törlése" @click="kepTorlese(item)">🖼️</button><button class="action-btn" type="button" title="Szerkesztés" @click="szerkesztesInditasa(item)">✏️</button><button class="action-btn danger" type="button" title="Törlés" @click="torol(item)">🗑️</button></div>
+        <div class="actions"><label class="action-btn" title="Kép feltöltése/cseréje">{{kepFolyamatban===item.id?'⏳':'📷'}}<input type="file" accept="image/*" @change="kepValt(item,$event)"/></label><button v-if="item.kepUrl" class="action-btn danger" type="button" title="Kép törlése" @click="kepTorlese(item)">✕</button><button class="action-btn" type="button" title="Szerkesztés" @click="szerkesztesInditasa(item)">✏️</button><button class="action-btn danger" type="button" title="Törlés" @click="torol(item)">🗑️</button></div>
       </template>
     </li>
     <li v-if="!lista.length" class="ures">Még nincs felvéve zöldség.</li>
