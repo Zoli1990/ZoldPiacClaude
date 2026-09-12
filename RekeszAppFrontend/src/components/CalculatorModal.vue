@@ -81,16 +81,17 @@ function press(value, type) {
 </template>
 
 <style scoped>
-.calc-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,.55); display:flex; align-items:center; justify-content:center; padding:20px; }
-.calculator { width:min(330px,100%); background:#050505; border-radius:28px; padding:14px; box-shadow:0 18px 50px rgba(0,0,0,.4); }
-.calc-top { height:28px; display:flex; justify-content:flex-end; }
-.calc-top button { border:0; background:none; color:#ff9500; font-size:15px; cursor:pointer; }
-.expression { color:rgba(255,255,255,.45); min-height:22px; text-align:right; padding:0 10px; font-size:16px; font-weight:400; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-variant-numeric:tabular-nums; }
-.display { color:white; height:70px; display:flex; align-items:flex-end; justify-content:flex-end; padding:0 8px 10px; font-size:48px; font-weight:300; overflow:hidden; font-variant-numeric:tabular-nums; }
+.calc-overlay { position:fixed; inset:0; z-index:100; background:rgba(2,15,7,.58); display:flex; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(4px); }
+.calculator { width:min(340px,100%); background:#0a120d; color:#fff; border:1px solid rgba(150,223,46,.18); border-radius:24px; padding:14px; box-shadow:0 24px 70px rgba(0,0,0,.42); }
+.calc-top { height:30px; display:flex; justify-content:flex-end; align-items:center; }
+.calc-top button { border:0; background:none; color:var(--brand-lime); font-size:15px; cursor:pointer; font-weight:700; }
+.expression { color:rgba(255,255,255,.48); min-height:22px; text-align:right; padding:0 10px; font-size:15px; font-weight:400; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; font-variant-numeric:tabular-nums; }
+.display { color:#fff; height:72px; display:flex; align-items:flex-end; justify-content:flex-end; padding:0 8px 10px; font-size:48px; font-weight:300; overflow:hidden; font-variant-numeric:tabular-nums; }
 .keys { display:grid; grid-template-columns:repeat(4,1fr); gap:9px; }
-.keys button { height:62px; border:0; border-radius:50%; font-size:24px; cursor:pointer; background:#333; color:#fff; }
+.keys button { height:62px; border:0; border-radius:18px; font-size:23px; font-weight:650; cursor:pointer; background:#1c2a20; color:#f4f8f4; }
 .keys button:active { filter:brightness(1.35); }
-.keys .clear,.keys .sign,.keys .percent { background:#a5a5a5; color:#111; }
-.keys .operator,.keys .equals { background:#ff9500; color:#fff; }
-.keys .zero { grid-column:span 2; border-radius:31px; text-align:left; padding-left:24px; }
+.keys .clear,.keys .sign,.keys .percent { background:#b7c6b8; color:#102016; }
+.keys .operator { background:var(--brand-green); color:#fff; }
+.keys .equals { background:var(--brand-orange); color:#fff; }
+.keys .zero { grid-column:span 2; text-align:left; padding-left:25px; }
 </style>
