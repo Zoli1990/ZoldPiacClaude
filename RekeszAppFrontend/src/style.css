@@ -24,52 +24,34 @@
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --brand-deep: #062d17;
-  --brand-green: #0b5f25;
-  --brand-lime: #96df2e;
-  --brand-lime-soft: #294617;
-  --brand-orange: #ff861d;
-  --brand-orange-dark: #e56e08;
-  --ink: #eaf4eb;
-  --muted: #a7bbaa;
-  --paper: #101b13;
-  --paper-dim: #08100b;
-  --paper-warm: #142218;
-  --line: #263b2b;
-  --line-strong: #36533d;
-  --ok: #63c977;
-  --owe: #ff7953;
-  --shadow: 0 16px 42px rgba(0, 0, 0, .34);
-  --shadow-soft: 0 6px 22px rgba(0, 0, 0, .25);
+  --brand-deep: #123d25;
+  --brand-green: #2f8748;
+  --brand-lime: #9edb55;
+  --brand-lime-soft: #35572f;
+  --brand-orange: #ff9850;
+  --brand-orange-dark: #e4772d;
+  --ink: #edf4ee;
+  --muted: #b9c8bb;
+  --paper: #18241c;
+  --paper-dim: #101810;
+  --paper-warm: #223126;
+  --line: #334638;
+  --line-strong: #4a5f4e;
+  --ok: #73d28b;
+  --owe: #ff8a63;
+  --shadow: 0 16px 42px rgba(0, 0, 0, .24);
+  --shadow-soft: 0 6px 22px rgba(0, 0, 0, .18);
   --chalk-green: var(--brand-lime);
-  --chalk-green-light: #7fbe2d;
+  --chalk-green-light: var(--brand-green);
   --kapia: var(--brand-orange);
   --kapia-dark: var(--brand-orange-dark);
   --olive: var(--muted);
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html { background: var(--paper-dim); }
-body {
-  margin: 0;
-  min-height: 100vh;
-  background: radial-gradient(circle at 100% 0, rgba(117, 201, 21, .08), transparent 28rem), var(--paper-dim);
-  color: var(--ink);
-  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-  line-height: 1.4;
-  transition: background-color .2s ease, color .2s ease;
-}
+body { margin: 0; min-height: 100vh; background: radial-gradient(circle at 100% 0, rgba(117, 201, 21, .05), transparent 28rem), var(--paper-dim); color: var(--ink); font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; line-height: 1.4; transition: background-color .2s ease, color .2s ease; }
 button, input, select, textarea { font-family: inherit; }
-input, select, textarea {
-  padding: 11px 12px;
-  border: 1.5px solid var(--line);
-  border-radius: 10px;
-  background: var(--paper);
-  color: var(--ink);
-  min-height: 44px;
-  min-width: 0;
-  max-width: 100%;
-  transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
-}
+input, select, textarea { padding: 11px 12px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--paper); color: var(--ink); min-height: 44px; min-width: 0; max-width: 100%; transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease; }
 textarea { resize: vertical; }
 input::placeholder, textarea::placeholder { color: var(--muted); opacity: .78; }
 input[type=checkbox], input[type=radio] { min-height: auto; accent-color: var(--brand-green); }
@@ -86,7 +68,8 @@ tr:last-child td { border-bottom: 0; }
 .btn-primary { background: linear-gradient(135deg, var(--brand-green), var(--brand-deep)); color: #fff; border: 0; border-radius: 11px; padding: 11px 18px; font-weight: 750; box-shadow: 0 7px 17px rgba(6, 76, 33, .20); }
 .btn-primary:hover:not(:disabled) { box-shadow: 0 9px 21px rgba(6, 76, 33, .26); }
 .btn-secondary { background: var(--paper); color: var(--brand-deep); border: 1.5px solid var(--line-strong); border-radius: 11px; padding: 10px 16px; font-weight: 700; }
-:root[data-theme="dark"] .btn-secondary { color: var(--ink); }
+:root[data-theme="dark"] .btn-primary { background: linear-gradient(135deg, #2f8748, #245d36); color: #f3f7f4; }
+:root[data-theme="dark"] .btn-secondary { background: #dce6de; color: #17331f; border-color: #9fb4a3; }
 .hiba { color: var(--owe); font-size: 13px; }
 a { color: var(--brand-green); }
 :root[data-theme="dark"] a { color: var(--brand-lime); }
@@ -102,14 +85,14 @@ a { color: var(--brand-green); }
 :root[data-theme="dark"] .modal input, :root[data-theme="dark"] .modal select, :root[data-theme="dark"] .card input, :root[data-theme="dark"] .card select, :root[data-theme="dark"] .card textarea, :root[data-theme="dark"] .sale-modal input, :root[data-theme="dark"] .sale-modal select, :root[data-theme="dark"] .sale-modal textarea { background: var(--paper-warm) !important; color: var(--ink) !important; border-color: var(--line-strong) !important; }
 :root[data-theme="dark"] .lista li, :root[data-theme="dark"] .action-btn { border-color: var(--line) !important; }
 :root[data-theme="dark"] .action-btn, :root[data-theme="dark"] .close { background: var(--paper-warm) !important; color: var(--ink) !important; }
-:root[data-theme="dark"] .action-btn.save { background: var(--brand-green) !important; color: #fff !important; }
+:root[data-theme="dark"] .action-btn.save { background: #2f8748 !important; color: #fff !important; }
+:root[data-theme="dark"] .manage-buyers, :root[data-theme="dark"] .stock-tile-atvitel, :root[data-theme="dark"] .link-btn, :root[data-theme="dark"] .quick-btn, :root[data-theme="dark"] .quick-input, :root[data-theme="dark"] .pencil { background: var(--paper-warm) !important; color: var(--ink) !important; border-color: var(--line-strong) !important; }
+:root[data-theme="dark"] .stock-tile-strip, :root[data-theme="dark"] .felv-tile-info { background: var(--paper-warm) !important; color: var(--ink) !important; }
+:root[data-theme="dark"] .toggle-pill { background: var(--paper-warm) !important; color: var(--ink) !important; border-color: var(--line-strong) !important; }
+:root[data-theme="dark"] .toggle-pill.active { background: #2f8748 !important; color: #fff !important; border-color: #2f8748 !important; }
+:root[data-theme="dark"] .btn-secondary.danger-btn, :root[data-theme="dark"] .danger-btn { background: #2a1914 !important; color: var(--owe) !important; border-color: #6a4032 !important; }
 @media (max-width: 600px) {
   .card { padding: 14px; border-radius: 14px; }
   .btn-primary, .btn-secondary { width: 100%; }
-  /* Mobil Safari/iOS fókuszkor automatikusan nagyítja a kisebb mezőket.
-     A 16px-es betűméret megakadályozza ezt, az !important pedig felülírja
-     az esetleges nézetenkénti input/select/textarea stílusokat is. */
-  input:not([type="checkbox"]):not([type="radio"]),
-  select,
-  textarea { font-size: 16px !important; }
+  input:not([type="checkbox"]):not([type="radio"]), select, textarea { font-size: 16px !important; }
 }
