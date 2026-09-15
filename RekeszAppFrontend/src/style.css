@@ -106,6 +106,10 @@ a { color: var(--brand-green); }
 @media (max-width: 600px) {
   .card { padding: 14px; border-radius: 14px; }
   .btn-primary, .btn-secondary { width: 100%; }
-  /* 16px alatt iOS/Safari fókuszkor automatikusan nagyítja a beviteli mezőt. */
-  input:not([type="checkbox"]):not([type="radio"]), select, textarea { font-size: 16px; }
+  /* Mobil Safari/iOS fókuszkor automatikusan nagyítja a kisebb mezőket.
+     A 16px-es betűméret megakadályozza ezt, az !important pedig felülírja
+     az esetleges nézetenkénti input/select/textarea stílusokat is. */
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea { font-size: 16px !important; }
 }
