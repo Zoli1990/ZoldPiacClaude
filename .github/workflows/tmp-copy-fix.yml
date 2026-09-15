@@ -1,0 +1,48 @@
+name: Temporary copy fix
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fix copy semantics
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          p = Path('RekeszAppFrontend/src/views/FelvasarlasView.vue')
+          s = p.read_text(encoding='utf-8')
+          s2 = s.replace('async function holnap(d){', 'function holnap(d){')
+          s2 = s2.replace(
+              "{zoldsegId:i.zoldsegId,rekeszTipusId:i.rekeszTipusId,mennyiseg:Number(i.mennyiseg),celDatum:holnap(i.datum)}",
+              "{felvasarlasTetelId:i.id,mennyiseg:Number(i.mennyiseg),celDatum:holnap(i.datum)}"
+          )
+          p.write_text(s2, encoding='utf-8')
+
+          p = Path('RekeszAppBackend/Contracts/Requests.cs')
+          s = p.read_text(encoding='utf-8')
+          s2 = s.replace(
+              "public record AtvitelRequest(\n    int ZoldsegId,\n    int RekeszTipusId,\n    int Mennyiseg,\n    DateOnly CelDatum\n);",
+              "public record AtvitelRequest(\n    int? FelvasarlasTetelId,\n    int? ZoldsegId,\n    int? RekeszTipusId,\n    int Mennyiseg,\n    DateOnly CelDatum\n);"
+          )
+          p.write_text(s2, encoding='utf-8')
+
+          p = Path('RekeszAppBackend/Controllers/FelvasarlasController.cs')
+          s = p.read_text(encoding='utf-8')
+          old = '''    [HttpPost("atvitel")]\n    public async Task<IActionResult> Atvitel(AtvitelRequest r)\n    {\n        if (r.Mennyiseg <= 0) return BadRequest(new { message = "A mennyiség legalább 1 kell legyen." });\n        if (!await db.Zoldsegek.AnyAsync(x => x.Id == r.ZoldsegId) || !await db.RekeszTipusok.AnyAsync(x => x.Id == r.RekeszTipusId)) return BadRequest(new { message = "Ismeretlen zöldség vagy rekesztípus." });\n        var strategy = db.Database.CreateExecutionStrategy();\n        return await strategy.ExecuteAsync(async () =>\n        {\n            await using var tx = await db.Database.BeginTransactionAsync();\n            var napiSorszam = (await db.FelvasarlasTetelek.Where(x => x.Datum == r.CelDatum).MaxAsync(x => (int?)x.NapiSorszam) ?? 0) + 1;\n            var entity = new FelvasarlasTetel\n            {\n                NapiSorszam = napiSorszam, Datum = r.CelDatum, Ido = DateTime.Now, SajatTermek = true,\n                ZoldsegId = r.ZoldsegId, RekeszTipusId = r.RekeszTipusId, Mennyiseg = r.Mennyiseg,\n                Fizetve = true, AdottRekeszDb = 0, Megjegyzes = "Áthozva az előző napról", Athozott = true\n            };\n            db.FelvasarlasTetelek.Add(entity);\n            await db.SaveChangesAsync();\n            await tx.CommitAsync();\n            return Created($"api/felvasarlas/{entity.Id}", entity);\n        });\n    }'''
+          new = '''    [HttpPost("atvitel")]\n    public async Task<IActionResult> Atvitel(AtvitelRequest r)\n    {\n        if (r.Mennyiseg <= 0) return BadRequest(new { message = "A mennyiség legalább 1 kell legyen." });\n\n        var source = r.FelvasarlasTetelId.HasValue\n            ? await db.FelvasarlasTetelek.SingleOrDefaultAsync(x => x.Id == r.FelvasarlasTetelId.Value)\n            : null;\n        if (source is null)\n        {\n            if (!r.ZoldsegId.HasValue || !r.RekeszTipusId.HasValue)\n                return BadRequest(new { message = "A forrás tétel azonosítója vagy a zöldség és rekesztípus megadása kötelező." });\n            if (!await db.Zoldsegek.AnyAsync(x => x.Id == r.ZoldsegId.Value) || !await db.RekeszTipusok.AnyAsync(x => x.Id == r.RekeszTipusId.Value))\n                return BadRequest(new { message = "Ismeretlen zöldség vagy rekesztípus." });\n        }\n\n        var strategy = db.Database.CreateExecutionStrategy();\n        return await strategy.ExecuteAsync(async () =>\n        {\n            await using var tx = await db.Database.BeginTransactionAsync();\n            var napiSorszam = (await db.FelvasarlasTetelek.Where(x => x.Datum == r.CelDatum).MaxAsync(x => (int?)x.NapiSorszam) ?? 0) + 1;\n\n            var entity = source is not null\n                ? new FelvasarlasTetel\n                {\n                    NapiSorszam = napiSorszam, Datum = r.CelDatum, Ido = DateTime.Now,\n                    SajatTermek = source.SajatTermek, PartnerId = source.PartnerId,\n                    ZoldsegId = source.ZoldsegId, RekeszTipusId = source.RekeszTipusId,\n                    Mennyiseg = r.Mennyiseg, Fizetve = source.Fizetve,\n                    AdottRekeszDb = source.AdottRekeszDb, Egysegar = source.Egysegar,\n                    Megjegyzes = source.Megjegyzes, Athozott = true, Helyszin = source.Helyszin\n                }\n                : new FelvasarlasTetel\n                {\n                    NapiSorszam = napiSorszam, Datum = r.CelDatum, Ido = DateTime.Now, SajatTermek = true,\n                    ZoldsegId = r.ZoldsegId!.Value, RekeszTipusId = r.RekeszTipusId!.Value, Mennyiseg = r.Mennyiseg,\n                    Fizetve = true, AdottRekeszDb = 0, Megjegyzes = "Átmásolva az előző napról", Athozott = true\n                };\n\n            db.FelvasarlasTetelek.Add(entity);\n            await db.SaveChangesAsync();\n            await tx.CommitAsync();\n            return Created($"api/felvasarlas/{entity.Id}", entity);\n        });\n    }'''
+          if old not in s:
+              raise SystemExit('Expected Atvitel method not found')
+          s = s.replace(old, new)
+          p.write_text(s, encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add RekeszAppFrontend/src/views/FelvasarlasView.vue RekeszAppBackend/Contracts/Requests.cs RekeszAppBackend/Controllers/FelvasarlasController.cs
+          git commit -m "Fix next-day purchase copy semantics"
+          git push
