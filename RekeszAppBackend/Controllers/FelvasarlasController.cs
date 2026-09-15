@@ -137,8 +137,10 @@ public class FelvasarlasController(AppDbContext db, IWebHostEnvironment env, ICo
             if (!await db.Zoldsegek.AnyAsync(x => x.Id == r.ZoldsegId.Value) || !await db.RekeszTipusok.AnyAsync(x => x.Id == r.RekeszTipusId.Value))
                 return BadRequest(new { message = "Ismeretlen zöldség vagy rekesztípus." });
         }
-        if (source is not null && r.Mennyiseg > source.Mennyiseg)
-            return BadRequest(new { message = $"A forrás tételben csak {source.Mennyiseg} db van." });
+        else if (r.Mennyiseg != source.Mennyiseg)
+        {
+            return BadRequest(new { message = "A napi áthelyezés teljes tételre vonatkozik." });
+        }
 
         var strategy = db.Database.CreateExecutionStrategy();
         return await strategy.ExecuteAsync(async () =>
@@ -146,34 +148,22 @@ public class FelvasarlasController(AppDbContext db, IWebHostEnvironment env, ICo
             await using var tx = await db.Database.BeginTransactionAsync();
             var napiSorszam = (await db.FelvasarlasTetelek.Where(x => x.Datum == r.CelDatum).MaxAsync(x => (int?)x.NapiSorszam) ?? 0) + 1;
 
-            var entity = source is not null
-                ? new FelvasarlasTetel
-                {
-                    NapiSorszam = napiSorszam, Datum = r.CelDatum, Ido = source.Ido,
-                    SajatTermek = source.SajatTermek, PartnerId = source.PartnerId,
-                    ZoldsegId = source.ZoldsegId, RekeszTipusId = source.RekeszTipusId,
-                    Mennyiseg = r.Mennyiseg, Fizetve = source.Fizetve,
-                    AdottRekeszDb = source.AdottRekeszDb, Egysegar = source.Egysegar,
-                    Megjegyzes = source.Megjegyzes, Athozott = source.Athozott, Helyszin = source.Helyszin
-                }
-                : new FelvasarlasTetel
-                {
-                    NapiSorszam = napiSorszam, Datum = r.CelDatum, Ido = DateTime.Now, SajatTermek = true,
-                    ZoldsegId = r.ZoldsegId!.Value, RekeszTipusId = r.RekeszTipusId!.Value, Mennyiseg = r.Mennyiseg,
-                    Fizetve = true, AdottRekeszDb = 0, Megjegyzes = "Áthelyezve az előző napról", Athozott = true
-                };
-
             if (source is not null)
             {
-                if (r.Mennyiseg == source.Mennyiseg)
-                    db.FelvasarlasTetelek.Remove(source);
-                else
-                {
-                    source.Mennyiseg -= r.Mennyiseg;
-                    source.AdottRekeszDb = Math.Min(source.AdottRekeszDb, source.Mennyiseg);
-                }
+                source.Datum = r.CelDatum;
+                source.NapiSorszam = napiSorszam;
+                source.Athozott = true;
+                await db.SaveChangesAsync();
+                await tx.CommitAsync();
+                return Ok(source);
             }
 
+            var entity = new FelvasarlasTetel
+            {
+                NapiSorszam = napiSorszam, Datum = r.CelDatum, Ido = DateTime.Now, SajatTermek = true,
+                ZoldsegId = r.ZoldsegId!.Value, RekeszTipusId = r.RekeszTipusId!.Value, Mennyiseg = r.Mennyiseg,
+                Fizetve = true, AdottRekeszDb = 0, Megjegyzes = "Áthelyezve az előző napról", Athozott = true
+            };
             db.FelvasarlasTetelek.Add(entity);
             await db.SaveChangesAsync();
             await tx.CommitAsync();
