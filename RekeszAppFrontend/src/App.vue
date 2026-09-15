@@ -10,6 +10,9 @@ const auth = useAuthStore()
 const bejelentkezve = computed(() => !!auth.token && route.name !== 'login')
 const showCalculator = ref(false)
 const darkMode = ref(false)
+const showInstallPrompt = ref(false)
+const installEvent = ref(null)
+const installBusy = ref(false)
 
 function alkalmazTema(dark) {
   darkMode.value = dark
@@ -17,8 +20,30 @@ function alkalmazTema(dark) {
   localStorage.setItem('zoldpiac:theme', dark ? 'dark' : 'light')
 }
 
+function pwaMarStandalone() {
+  return window.matchMedia?.('(display-mode: standalone)').matches || window.navigator.standalone === true
+}
+
+function pwaElutasitasAktiv() {
+  const t = Number(localStorage.getItem('zoldpiac:pwa-dismissed-until') || 0)
+  return t > Date.now()
+}
+
 onMounted(() => {
   alkalmazTema(localStorage.getItem('zoldpiac:theme') === 'dark')
+
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault()
+    installEvent.value = event
+    if (!pwaMarStandalone() && !pwaElutasitasAktiv()) {
+      setTimeout(() => { showInstallPrompt.value = true }, 1200)
+    }
+  })
+
+  window.addEventListener('appinstalled', () => {
+    installEvent.value = null
+    showInstallPrompt.value = false
+  })
 })
 
 watch(darkMode, (dark) => {
@@ -27,6 +52,26 @@ watch(darkMode, (dark) => {
 
 function temaValtas() {
   alkalmazTema(!darkMode.value)
+}
+
+async function pwaTelepites() {
+  if (!installEvent.value || installBusy.value) return
+  installBusy.value = true
+  try {
+    await installEvent.value.prompt()
+    const result = await installEvent.value.userChoice
+    if (result.outcome === 'accepted') {
+      showInstallPrompt.value = false
+      installEvent.value = null
+    }
+  } finally {
+    installBusy.value = false
+  }
+}
+
+function pwaMostNem() {
+  showInstallPrompt.value = false
+  localStorage.setItem('zoldpiac:pwa-dismissed-until', String(Date.now() + 7 * 24 * 60 * 60 * 1000))
 }
 
 function kijelentkezes() {
@@ -66,6 +111,19 @@ function kijelentkezes() {
   </button>
 
   <main :class="{ 'no-header': !bejelentkezve }"><RouterView /></main>
+
+  <div v-if="showInstallPrompt" class="pwa-install-card" role="dialog" aria-label="ZöldPiac telepítése">
+    <div class="pwa-install-icon" aria-hidden="true">🥬</div>
+    <div class="pwa-install-copy">
+      <strong>Telepítsd a ZöldPiacot</strong>
+      <span>Gyorsabb elérés, külön alkalmazásként a készülékeden.</span>
+    </div>
+    <button type="button" class="btn-primary pwa-install-btn" :disabled="installBusy" @click="pwaTelepites">
+      {{ installBusy ? 'Telepítés…' : 'Telepítés' }}
+    </button>
+    <button type="button" class="pwa-dismiss-btn" @click="pwaMostNem">Most nem</button>
+  </div>
+
   <CalculatorModal v-if="showCalculator" @close="showCalculator = false" />
 </template>
 
@@ -138,6 +196,44 @@ nav a.active { background:var(--brand-lime); color:var(--brand-deep); box-shadow
 main { max-width:1160px; margin:0 auto; padding:22px; }
 main.no-header { max-width:440px; padding-top:80px; }
 
+.pwa-install-card {
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:100;
+  width:min(440px, calc(100vw - 28px));
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  grid-template-areas:
+    "icon copy install"
+    "icon copy dismiss";
+  gap:10px 12px;
+  align-items:center;
+  padding:14px;
+  border:1px solid var(--line-strong);
+  border-radius:16px;
+  background:var(--paper);
+  color:var(--ink);
+  box-shadow:0 14px 36px rgba(0,0,0,.22);
+}
+.pwa-install-icon {
+  grid-area:icon;
+  width:46px;
+  height:46px;
+  display:grid;
+  place-items:center;
+  border-radius:13px;
+  background:var(--brand-lime-soft);
+  font-size:24px;
+}
+.pwa-install-copy { grid-area:copy; min-width:0; display:flex; flex-direction:column; gap:3px; }
+.pwa-install-copy strong { color:var(--brand-deep); font-size:14px; }
+.pwa-install-copy span { color:var(--muted); font-size:12px; line-height:1.35; }
+.pwa-install-btn { grid-area:install; min-height:38px; padding:8px 12px; white-space:nowrap; }
+.pwa-dismiss-btn { grid-area:dismiss; border:0; background:transparent; color:var(--muted); font-size:11px; min-height:28px; padding:2px 6px; }
+.pwa-dismiss-btn:hover { color:var(--ink); }
+:root[data-theme="dark"] .pwa-install-copy strong { color:var(--brand-lime); }
+
 @media (max-width: 840px) {
   header { padding:10px 14px; gap:10px; }
   .brand { flex:1; }
@@ -155,5 +251,16 @@ main.no-header { max-width:440px; padding-top:80px; }
   main { padding:14px; }
   main.no-header { padding-top:44px; max-width:100%; }
   .public-theme-button { top:10px; right:10px; }
+  .pwa-install-card {
+    right:10px;
+    bottom:10px;
+    width:calc(100vw - 20px);
+    grid-template-columns:auto 1fr;
+    grid-template-areas:
+      "icon copy"
+      "icon install"
+      "icon dismiss";
+  }
+  .pwa-install-btn { width:100%; }
 }
 </style>
