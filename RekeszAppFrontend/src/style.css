@@ -5,7 +5,6 @@
   --brand-lime-soft: #dff3bf;
   --brand-orange: #ff7900;
   --brand-orange-dark: #d75f00;
-
   --ink: #152319;
   --muted: #5b7061;
   --paper: #ffffff;
@@ -17,15 +16,12 @@
   --owe: #c54724;
   --shadow: 0 12px 32px rgba(6, 47, 20, .10);
   --shadow-soft: 0 5px 18px rgba(6, 47, 20, .07);
-
-  /* Backward-compatible names used by existing components. */
   --chalk-green: var(--brand-deep);
   --chalk-green-light: var(--brand-green);
   --kapia: var(--brand-orange);
   --kapia-dark: var(--brand-orange-dark);
   --olive: var(--muted);
 }
-
 :root[data-theme="dark"] {
   color-scheme: dark;
   --brand-deep: #062d17;
@@ -34,7 +30,6 @@
   --brand-lime-soft: #294617;
   --brand-orange: #ff861d;
   --brand-orange-dark: #e56e08;
-
   --ink: #eaf4eb;
   --muted: #a7bbaa;
   --paper: #101b13;
@@ -46,28 +41,23 @@
   --owe: #ff7953;
   --shadow: 0 16px 42px rgba(0, 0, 0, .34);
   --shadow-soft: 0 6px 22px rgba(0, 0, 0, .25);
-
   --chalk-green: var(--brand-lime);
   --chalk-green-light: #7fbe2d;
   --kapia: var(--brand-orange);
   --kapia-dark: var(--brand-orange-dark);
   --olive: var(--muted);
 }
-
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html { background: var(--paper-dim); }
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 100% 0, rgba(117, 201, 21, .08), transparent 28rem),
-    var(--paper-dim);
+  background: radial-gradient(circle at 100% 0, rgba(117, 201, 21, .08), transparent 28rem), var(--paper-dim);
   color: var(--ink);
   font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
   line-height: 1.4;
   transition: background-color .2s ease, color .2s ease;
 }
-
 button, input, select, textarea { font-family: inherit; }
 input, select, textarea {
   padding: 11px 12px;
@@ -83,118 +73,39 @@ input, select, textarea {
 textarea { resize: vertical; }
 input::placeholder, textarea::placeholder { color: var(--muted); opacity: .78; }
 input[type=checkbox], input[type=radio] { min-height: auto; accent-color: var(--brand-green); }
-input:focus, select:focus, textarea:focus {
-  outline: none;
-  border-color: var(--brand-lime);
-  box-shadow: 0 0 0 3px rgba(117, 201, 21, .18);
-}
-button {
-  cursor: pointer;
-  min-height: 44px;
-  transition: transform .15s ease, filter .15s ease, box-shadow .15s ease, background-color .15s ease, border-color .15s ease;
-}
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--brand-lime); box-shadow: 0 0 0 3px rgba(117, 201, 21, .18); }
+button { cursor: pointer; min-height: 44px; transition: transform .15s ease, filter .15s ease, box-shadow .15s ease, background-color .15s ease, border-color .15s ease; }
 button:hover:not(:disabled) { filter: brightness(1.025); }
 button:active:not(:disabled) { transform: translateY(1px); }
 button:disabled { cursor: not-allowed; opacity: .58; }
-
 table { width: 100%; border-collapse: separate; border-spacing: 0; }
-th {
-  text-align: left;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-  color: var(--muted);
-  padding: 10px;
-  border-bottom: 2px solid var(--line);
-}
+th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: 10px; border-bottom: 2px solid var(--line); }
 td { padding: 10px; border-bottom: 1px solid var(--line); }
 tr:last-child td { border-bottom: 0; }
-
-.card {
-  background: var(--paper);
-  border-radius: 16px;
-  border: 1px solid var(--line);
-  padding: 18px;
-  min-width: 0;
-  box-shadow: var(--shadow-soft);
-}
-.btn-primary {
-  background: linear-gradient(135deg, var(--brand-green), var(--brand-deep));
-  color: #fff;
-  border: 0;
-  border-radius: 11px;
-  padding: 11px 18px;
-  font-weight: 750;
-  box-shadow: 0 7px 17px rgba(6, 76, 33, .20);
-}
+.card { background: var(--paper); border-radius: 16px; border: 1px solid var(--line); padding: 18px; min-width: 0; box-shadow: var(--shadow-soft); }
+.btn-primary { background: linear-gradient(135deg, var(--brand-green), var(--brand-deep)); color: #fff; border: 0; border-radius: 11px; padding: 11px 18px; font-weight: 750; box-shadow: 0 7px 17px rgba(6, 76, 33, .20); }
 .btn-primary:hover:not(:disabled) { box-shadow: 0 9px 21px rgba(6, 76, 33, .26); }
-.btn-secondary {
-  background: var(--paper);
-  color: var(--brand-deep);
-  border: 1.5px solid var(--line-strong);
-  border-radius: 11px;
-  padding: 10px 16px;
-  font-weight: 700;
-}
+.btn-secondary { background: var(--paper); color: var(--brand-deep); border: 1.5px solid var(--line-strong); border-radius: 11px; padding: 10px 16px; font-weight: 700; }
 :root[data-theme="dark"] .btn-secondary { color: var(--ink); }
 .hiba { color: var(--owe); font-size: 13px; }
 a { color: var(--brand-green); }
 :root[data-theme="dark"] a { color: var(--brand-lime); }
-
-/* Common visual language for existing view/component classes. */
-.section-head, .page-head, .toolbar, .nav-row, .foto-row, .with-icon {
-  color: var(--ink);
-}
-.section-head h1, .section-head h2, .section-head h3,
-.page-head h1, .page-head h2, .page-head h3,
-.card h1, .card h2, .card h3 { color: var(--brand-deep); }
-:root[data-theme="dark"] .section-head h1, :root[data-theme="dark"] .section-head h2,
-:root[data-theme="dark"] .section-head h3, :root[data-theme="dark"] .page-head h1,
-:root[data-theme="dark"] .page-head h2, :root[data-theme="dark"] .page-head h3,
-:root[data-theme="dark"] .card h1, :root[data-theme="dark"] .card h2,
-:root[data-theme="dark"] .card h3 { color: var(--brand-lime); }
-
-.felv-tile, .stock-tile {
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  overflow: hidden;
-  background: var(--paper);
-  box-shadow: var(--shadow-soft);
-}
+.section-head, .page-head, .toolbar, .nav-row, .foto-row, .with-icon { color: var(--ink); }
+.section-head h1, .section-head h2, .section-head h3, .page-head h1, .page-head h2, .page-head h3, .card h1, .card h2, .card h3 { color: var(--brand-deep); }
+:root[data-theme="dark"] .section-head h1, :root[data-theme="dark"] .section-head h2, :root[data-theme="dark"] .section-head h3, :root[data-theme="dark"] .page-head h1, :root[data-theme="dark"] .page-head h2, :root[data-theme="dark"] .page-head h3, :root[data-theme="dark"] .card h1, :root[data-theme="dark"] .card h2, :root[data-theme="dark"] .card h3 { color: var(--brand-lime); }
+.felv-tile, .stock-tile { border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--paper); box-shadow: var(--shadow-soft); }
 .felv-tile:hover, .stock-tile:hover { border-color: var(--line-strong); box-shadow: var(--shadow); }
 .felv-tile-info, .stock-tile-strip { background: var(--paper); }
-
 .overlay, .calc-overlay { backdrop-filter: blur(3px); }
-.overlay > .card, .overlay > .modal,
-.athelyez-modal, .felv-detail-modal, .sale-modal {
-  box-shadow: var(--shadow);
-  border: 1px solid var(--line);
-}
-
-/* Existing component styles still contain a few legacy literal colors.
-   The rules below keep those pieces visually aligned, including dark mode. */
-:root[data-theme="dark"] .modal,
-:root[data-theme="dark"] .card,
-:root[data-theme="dark"] .calculator,
-:root[data-theme="dark"] .auth-card,
-:root[data-theme="dark"] .sale-modal,
-:root[data-theme="dark"] .felv-detail-modal,
-:root[data-theme="dark"] .athelyez-modal { background: var(--paper) !important; color: var(--ink) !important; }
-:root[data-theme="dark"] .modal input,
-:root[data-theme="dark"] .modal select,
-:root[data-theme="dark"] .card input,
-:root[data-theme="dark"] .card select,
-:root[data-theme="dark"] .card textarea,
-:root[data-theme="dark"] .sale-modal input,
-:root[data-theme="dark"] .sale-modal select,
-:root[data-theme="dark"] .sale-modal textarea { background: var(--paper-warm) !important; color: var(--ink) !important; border-color: var(--line-strong) !important; }
-:root[data-theme="dark"] .lista li,
-:root[data-theme="dark"] .action-btn { border-color: var(--line) !important; }
-:root[data-theme="dark"] .action-btn,
-:root[data-theme="dark"] .close { background: var(--paper-warm) !important; color: var(--ink) !important; }
+.overlay > .card, .overlay > .modal, .athelyez-modal, .felv-detail-modal, .sale-modal { box-shadow: var(--shadow); border: 1px solid var(--line); }
+:root[data-theme="dark"] .modal, :root[data-theme="dark"] .card, :root[data-theme="dark"] .calculator, :root[data-theme="dark"] .auth-card, :root[data-theme="dark"] .sale-modal, :root[data-theme="dark"] .felv-detail-modal, :root[data-theme="dark"] .athelyez-modal { background: var(--paper) !important; color: var(--ink) !important; }
+:root[data-theme="dark"] .modal input, :root[data-theme="dark"] .modal select, :root[data-theme="dark"] .card input, :root[data-theme="dark"] .card select, :root[data-theme="dark"] .card textarea, :root[data-theme="dark"] .sale-modal input, :root[data-theme="dark"] .sale-modal select, :root[data-theme="dark"] .sale-modal textarea { background: var(--paper-warm) !important; color: var(--ink) !important; border-color: var(--line-strong) !important; }
+:root[data-theme="dark"] .lista li, :root[data-theme="dark"] .action-btn { border-color: var(--line) !important; }
+:root[data-theme="dark"] .action-btn, :root[data-theme="dark"] .close { background: var(--paper-warm) !important; color: var(--ink) !important; }
 :root[data-theme="dark"] .action-btn.save { background: var(--brand-green) !important; color: #fff !important; }
-
 @media (max-width: 600px) {
   .card { padding: 14px; border-radius: 14px; }
   .btn-primary, .btn-secondary { width: 100%; }
+  /* 16px alatt iOS/Safari fókuszkor automatikusan nagyítja a beviteli mezőt. */
+  input:not([type="checkbox"]):not([type="radio"]), select, textarea { font-size: 16px; }
 }
