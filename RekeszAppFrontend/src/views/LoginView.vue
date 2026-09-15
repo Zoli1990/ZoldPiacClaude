@@ -26,7 +26,9 @@ async function bejelentkezes() {
 
 <template>
   <div class="card auth-card">
-    <img class="brand" src="/brand-zoldpiac.png" alt="ZöldPiac — friss zöldségek, okosan. Online." />
+    <div class="brand-frame">
+      <img class="brand" src="/brand-zoldpiac.png" alt="ZöldPiac — friss zöldségek, okosan. Online." />
+    </div>
     <h2>Bejelentkezés</h2>
     <form @submit.prevent="bejelentkezes">
       <label>Email cím
@@ -47,7 +49,18 @@ async function bejelentkezes() {
 
 <style scoped>
 .auth-card { max-width: 420px; margin: 0 auto; }
-.brand { display: block; width: 100%; max-width: 220px; margin: 0 auto 14px; height: auto; }
+.brand-frame {
+  width: 100%;
+  max-width: 220px;
+  margin: 0 auto 14px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.brand { display: block; width: 100%; height: auto; }
 h2 { margin-top: 0; font-size: 18px; color: var(--chalk-green); text-align: center; }
 form { display: flex; flex-direction: column; gap: 12px; }
 label { display: flex; flex-direction: column; gap: 5px; font-size: 12.5px; font-weight: 600; color: var(--olive); text-transform: uppercase; letter-spacing: 0.03em; }
