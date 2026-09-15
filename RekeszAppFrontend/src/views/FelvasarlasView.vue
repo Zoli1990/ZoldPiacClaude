@@ -89,8 +89,8 @@ function zarFelvCsoportDetail(){felvCsoportDetail.value=null}
 function szerkesztCsoportTetelet(item){zarFelvCsoportDetail();nyitFelvDetail(item)}
 function zarFelvDetail(){felvDetail.value=null;editId.value=null}
 async function mentesModalbol(){await mentSzerkesztes(felvDetail.value.id);if(!hiba.value)zarFelvDetail()}
-async function holnap(d){const x=new Date(d+'T00:00:00');x.setDate(x.getDate()+1);return x.toISOString().slice(0,10)}
-async function atmasolMasnapra(i){hiba.value='';if(!confirm(`A #${i.napiSorszam} felvásárlást átmásolod ${holnap(i.datum)} napra?`))return;try{await client.post('/felvasarlas/atvitel',{zoldsegId:i.zoldsegId,rekeszTipusId:i.rekeszTipusId,mennyiseg:Number(i.mennyiseg),celDatum:holnap(i.datum)});zarFelvDetail();await frissit()}catch(e){hiba.value=e.response?.data?.message||'Átmásolás sikertelen.'}}
+function holnap(d){const x=new Date(d+'T00:00:00');x.setDate(x.getDate()+1);return x.toISOString().slice(0,10)}
+async function atmasolMasnapra(i){hiba.value='';if(!confirm(`A #${i.napiSorszam} felvásárlást átmásolod ${holnap(i.datum)} napra?`))return;try{await client.post('/felvasarlas/atvitel',{felvasarlasTetelId:i.id,mennyiseg:Number(i.mennyiseg),celDatum:holnap(i.datum)});zarFelvDetail();await frissit()}catch(e){hiba.value=e.response?.data?.message||'Átmásolás sikertelen.'}}
 function torolModalbol(){const it=felvDetail.value;if(!confirm(`Törlöd a #${it.napiSorszam} tételt (${it.zoldsegNev})?`))return;try{await client.delete(`/felvasarlas/${it.id}`);zarFelvDetail();await frissit()}catch{hiba.value='Törlés sikertelen.'}}
 
 function nyitRaktarDetail(s){raktarDetail.value=s}

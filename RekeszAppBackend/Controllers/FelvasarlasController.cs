@@ -126,18 +126,41 @@ public class FelvasarlasController(AppDbContext db, IWebHostEnvironment env, ICo
     public async Task<IActionResult> Atvitel(AtvitelRequest r)
     {
         if (r.Mennyiseg <= 0) return BadRequest(new { message = "A mennyiség legalább 1 kell legyen." });
-        if (!await db.Zoldsegek.AnyAsync(x => x.Id == r.ZoldsegId) || !await db.RekeszTipusok.AnyAsync(x => x.Id == r.RekeszTipusId)) return BadRequest(new { message = "Ismeretlen zöldség vagy rekesztípus." });
+
+        var source = r.FelvasarlasTetelId.HasValue
+            ? await db.FelvasarlasTetelek.SingleOrDefaultAsync(x => x.Id == r.FelvasarlasTetelId.Value)
+            : null;
+        if (source is null)
+        {
+            if (!r.ZoldsegId.HasValue || !r.RekeszTipusId.HasValue)
+                return BadRequest(new { message = "A forrás tétel azonosítója vagy a zöldség és rekesztípus megadása kötelező." });
+            if (!await db.Zoldsegek.AnyAsync(x => x.Id == r.ZoldsegId.Value) || !await db.RekeszTipusok.AnyAsync(x => x.Id == r.RekeszTipusId.Value))
+                return BadRequest(new { message = "Ismeretlen zöldség vagy rekesztípus." });
+        }
+
         var strategy = db.Database.CreateExecutionStrategy();
         return await strategy.ExecuteAsync(async () =>
         {
             await using var tx = await db.Database.BeginTransactionAsync();
             var napiSorszam = (await db.FelvasarlasTetelek.Where(x => x.Datum == r.CelDatum).MaxAsync(x => (int?)x.NapiSorszam) ?? 0) + 1;
-            var entity = new FelvasarlasTetel
-            {
-                NapiSorszam = napiSorszam, Datum = r.CelDatum, Ido = DateTime.Now, SajatTermek = true,
-                ZoldsegId = r.ZoldsegId, RekeszTipusId = r.RekeszTipusId, Mennyiseg = r.Mennyiseg,
-                Fizetve = true, AdottRekeszDb = 0, Megjegyzes = "Áthozva az előző napról", Athozott = true
-            };
+
+            var entity = source is not null
+                ? new FelvasarlasTetel
+                {
+                    NapiSorszam = napiSorszam, Datum = r.CelDatum, Ido = DateTime.Now,
+                    SajatTermek = source.SajatTermek, PartnerId = source.PartnerId,
+                    ZoldsegId = source.ZoldsegId, RekeszTipusId = source.RekeszTipusId,
+                    Mennyiseg = r.Mennyiseg, Fizetve = source.Fizetve,
+                    AdottRekeszDb = source.AdottRekeszDb, Egysegar = source.Egysegar,
+                    Megjegyzes = source.Megjegyzes, Athozott = true, Helyszin = source.Helyszin
+                }
+                : new FelvasarlasTetel
+                {
+                    NapiSorszam = napiSorszam, Datum = r.CelDatum, Ido = DateTime.Now, SajatTermek = true,
+                    ZoldsegId = r.ZoldsegId!.Value, RekeszTipusId = r.RekeszTipusId!.Value, Mennyiseg = r.Mennyiseg,
+                    Fizetve = true, AdottRekeszDb = 0, Megjegyzes = "Átmásolva az előző napról", Athozott = true
+                };
+
             db.FelvasarlasTetelek.Add(entity);
             await db.SaveChangesAsync();
             await tx.CommitAsync();

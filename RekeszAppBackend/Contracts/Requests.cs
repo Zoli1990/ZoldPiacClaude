@@ -28,8 +28,9 @@ public record FelvasarlasRequest(
 );
 
 public record AtvitelRequest(
-    int ZoldsegId,
-    int RekeszTipusId,
+    int? FelvasarlasTetelId,
+    int? ZoldsegId,
+    int? RekeszTipusId,
     int Mennyiseg,
     DateOnly CelDatum
 );
