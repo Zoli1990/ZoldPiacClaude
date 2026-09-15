@@ -1,71 +1,10 @@
 name: Temporary UI fix
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
 jobs:
-  fix:
-    if: github.actor != 'github-actions[bot]'
+  disabled:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Apply requested UI changes
-        run: |
-          python3 <<'PY'
-          from pathlib import Path
-          import re
-
-          def edit(path, fn):
-              p = Path(path)
-              s = p.read_text(encoding='utf-8')
-              s2 = fn(s)
-              if s2 == s:
-                  raise SystemExit(f'No changes made to {path}')
-              p.write_text(s2, encoding='utf-8')
-
-          def felv(s):
-              s = s.replace(
-                  "const showPartnerModal=ref(false),showZoldsegModal=ref(false),showRekeszModal=ref(false),editId=ref(null),editForm=ref({})",
-                  "const showPartnerModal=ref(false),showVevoModal=ref(false),showZoldsegModal=ref(false),showRekeszModal=ref(false),editId=ref(null),editForm=ref({})\nconst vevek=ref([])"
-              )
-              s = s.replace(
-                  "async function torzsadatok(){try{const[p,z,r]=await Promise.all([client.get('/partnerek'),client.get('/zoldsegek'),client.get('/rekesztipusok')]);partnerek.value=p.data;zoldsegek.value=z.data;rekesztipusok.value=r.data}",
-                  "async function torzsadatok(){try{const[p,v,z,r]=await Promise.all([client.get('/partnerek'),client.get('/vevek'),client.get('/zoldsegek'),client.get('/rekesztipusok')]);partnerek.value=p.data;vevek.value=v.data;zoldsegek.value=z.data;rekesztipusok.value=r.data}"
-              )
-              s = s.replace(
-                  "function partnerLetrehozva(p){partnerek.value.push(p)}",
-                  "function partnerLetrehozva(p){partnerek.value.push(p)}\nfunction vevoLetrehozva(v){vevek.value.push(v)}"
-              )
-              s = s.replace(
-                  '<button type="button" class="link-btn" @click="showPartnerModal=true">Eladók kezelése</button>',
-                  '<button type="button" class="link-btn" @click="showPartnerModal=true">Eladók kezelése</button><button type="button" class="link-btn" @click="showVevoModal=true">Vevők kezelése</button>'
-              )
-              marker = "function torolModalbol(){const it=felvDetail.value;"
-              if "function atmasolMasnapra(i)" not in s:
-                  insert_at = s.index(marker)
-                  s = s[:insert_at] + "function holnap(d){const x=new Date(d+'T00:00:00');x.setDate(x.getDate()+1);return x.toISOString().slice(0,10)}\nasync function atmasolMasnapra(i){hiba.value='';if(!confirm(`A #${i.napiSorszam} felvásárlást átmásolod ${holnap(i.datum)} napra?`))return;try{await client.post('/felvasarlas/atvitel',{zoldsegId:i.zoldsegId,rekeszTipusId:i.rekeszTipusId,mennyiseg:Number(i.mennyiseg),celDatum:holnap(i.datum)});zarFelvDetail();await frissit()}catch(e){hiba.value=e.response?.data?.message||'Átmásolás sikertelen.'}}\n" + s[insert_at:]
-              s = s.replace(
-                  '<div class="nav-row"><button type="button" class="btn-secondary" @click="torolModalbol">🗑️ Törlés</button><button type="button" class="btn-primary" @click="mentesModalbol">Mentés</button></div>',
-                  '<div class="nav-row"><button type="button" class="btn-primary" @click="atmasolMasnapra(felvDetail)">📅 Másolás másnapra</button><button type="button" class="btn-secondary" @click="torolModalbol">🗑️ Törlés</button><button type="button" class="btn-primary" @click="mentesModalbol">Mentés</button></div>'
-              )
-              s = s.replace(
-                  '<TorzsadatModal v-if="showPartnerModal" title="Eladók" api-path="/partnerek" nev-label="Eladó neve" @close="showPartnerModal=false" @changed="torzsadatok"/>',
-                  '<TorzsadatModal v-if="showPartnerModal" title="Eladók" api-path="/partnerek" nev-label="Eladó neve" @close="showPartnerModal=false" @changed="torzsadatok"/><TorzsadatModal v-if="showVevoModal" title="Vevők" api-path="/vevek" nev-label="Vevő neve / azonosítója" :nev-kotelezo="false" nev-placeholder="Név, rendszám vagy üresen hagyható" @close="showVevoModal=false" @changed="torzsadatok"/>'
-              )
-              return s
-
-          def elad(s):
-              s = s.replace('<button type="button" class="manage-buyers" @click="showVevoModal=true">👥 Vevők kezelése</button>', '')
-              s = s.replace('<div class="torzsadat-linkek"><button type="button" class="link-btn" @click="showVevoModal=true">Vevők kezelése</button></div>', '')
-              s = s.replace('<TorzsadatModal v-if="showVevoModal" title="Vevők kezelése" api-path="/vevők" nev-label="Vevő neve / azonosítója" :nev-kotelezo="false" nev-placeholder="Név, rendszám vagy üresen hagyható" @close="showVevoModal=false" @changed="torzsadatok"/>', '')
-              return s
-
-          edit('RekeszAppFrontend/src/views/FelvasarlasView.vue', felv)
-          edit('RekeszAppFrontend/src/views/EladasView.vue', elad)
-          PY
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add RekeszAppFrontend/src/views/FelvasarlasView.vue RekeszAppFrontend/src/views/EladasView.vue
-          git commit -m "Move buyer management and copy purchases to next day"
-          git push
+      - run: echo disabled
